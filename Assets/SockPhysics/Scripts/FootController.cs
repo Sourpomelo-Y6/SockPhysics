@@ -21,6 +21,7 @@ namespace SockPhysics
 
         public bool IsDragging { get; private set; }
         public float MaxSpeed => maxSpeed;
+        public event System.Action PoseReset;
 
         private void Awake() => Initialize();
 
@@ -95,6 +96,7 @@ namespace SockPhysics
             target = initialPosition;
             body.WakeUp();
             Physics2D.SyncTransforms();
+            PoseReset?.Invoke();
         }
 
         private void OnDisable() => EndDrag();
