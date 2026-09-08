@@ -205,6 +205,11 @@ namespace SockPhysics.Editor
         public static void CapturePreview()
         {
             EditorSceneManager.OpenScene(ScenePath);
+            CaptureCurrentPreview("Logs/Step2Preview.png");
+        }
+
+        public static void CaptureCurrentPreview(string outputPath)
+        {
             var camera = Camera.main;
             var target = new RenderTexture(1280, 720, 24);
             var previousTarget = RenderTexture.active;
@@ -217,7 +222,7 @@ namespace SockPhysics.Editor
                 pixels.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0);
                 pixels.Apply();
                 Directory.CreateDirectory("Logs");
-                File.WriteAllBytes("Logs/Step2Preview.png", pixels.EncodeToPNG());
+                File.WriteAllBytes(outputPath, pixels.EncodeToPNG());
             }
             finally
             {
