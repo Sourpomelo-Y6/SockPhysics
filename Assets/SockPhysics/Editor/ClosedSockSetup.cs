@@ -96,7 +96,7 @@ namespace SockPhysics.Editor
             Debug.Log("STEP3_PHYSICS_VERIFICATION_PASSED");
         }
 
-        private static void CheckClosed(SockController sock)
+        internal static void CheckClosed(SockController sock)
         {
             foreach (var p in sock.GetComponentsInChildren<SockPhysicsPoint>())
             {
@@ -105,7 +105,7 @@ namespace SockPhysics.Editor
             }
         }
 
-        private static void Simulate(FootController foot, SockController sock, SockRecovery recovery, int count)
+        internal static void Simulate(FootController foot, SockController sock, SockRecovery recovery, int count)
         {
             var collider = foot.GetComponent<Collider2D>();
             for (int step = 0; step < count; step++)

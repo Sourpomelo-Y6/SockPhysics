@@ -11,6 +11,14 @@ namespace SockPhysics
         [SerializeField, Min(0)] private float maxRecoveryForce = 8f;
         private SockController sock;
 
+        public void Configure(float strength, float damping, float horizontal, float forceLimit)
+        {
+            recoveryStrength = Mathf.Max(0, strength);
+            recoveryDamping = Mathf.Max(0, damping);
+            horizontalRecovery = Mathf.Clamp01(horizontal);
+            maxRecoveryForce = Mathf.Max(0, forceLimit);
+        }
+
         private void FixedUpdate() => StepPhysics();
 
         public void StepPhysics()
