@@ -166,7 +166,7 @@ namespace SockPhysics.Editor
             }
             Debug.Log("STEP7_PHYSICS_VERIFICATION_PASSED");
         }
-        private static void Simulate(FootController leg, AnkleController ankle, SockController sock, FitEvaluator fit, int count)
+        internal static void Simulate(FootController leg, AnkleController ankle, SockController sock, FitEvaluator fit, int count)
         {
             var points = UnityEngine.Object.FindObjectsOfType<SockPhysicsPoint>();
             var parts = new[] { leg.GetComponent<Collider2D>(), ankle.GetComponent<Collider2D>() };

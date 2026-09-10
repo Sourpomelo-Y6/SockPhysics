@@ -18,6 +18,16 @@ namespace SockPhysics
         public bool InputLocked { get; set; }
         [SerializeField] private bool fitStage;
         [SerializeField] private bool bendStage;
+        [SerializeField] private bool resistanceStage;
+        public void ShowResistanceInstructions() => resistanceStage = true;
+        public void SetBendFreedom(float freedom)
+        {
+            if (!bendStage) return;
+            minimumAngle = Mathf.Lerp(-10, -100, Mathf.Clamp01(freedom));
+            targetAngle = Mathf.Clamp(targetAngle, minimumAngle, maximumAngle);
+            var joint = GetComponent<HingeJoint2D>();
+            joint.limits = new JointAngleLimits2D { min = -maximumAngle, max = -minimumAngle };
+        }
         [SerializeField] private float minimumAngle = -70;
         [SerializeField] private float maximumAngle = 30;
         [SerializeField] private float resetAngle = -50;
@@ -74,9 +84,9 @@ namespace SockPhysics
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 16, 410, 170), GUI.skin.box);
-            GUILayout.Label(bendStage ? "STEP 7 / Turn the corner" : fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
+            GUILayout.Label(resistanceStage ? "STEP 8 / Push and pull back" : bendStage ? "STEP 7 / Turn the corner" : fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
             GUILayout.Label("Drag the light green LEG. Q / E: bend ankle.");
-            GUILayout.Label(bendStage ? "At the bend, pull back and use Q toward -90 degrees." : "Push, pull back, straighten with E, then push again.");
+            GUILayout.Label(resistanceStage ? "Push at bend, pull left, repeat. Then use Q to bend." : bendStage ? "At the bend, pull back and use Q toward -90 degrees." : "Push, pull back, straighten with E, then push again.");
             GUILayout.Label("Target ankle: " + targetAngle.ToString("F0") + " degrees");
             if (GUILayout.Button("Reset leg, foot and sock [R]")) leg.ResetPose();
             GUILayout.EndArea();

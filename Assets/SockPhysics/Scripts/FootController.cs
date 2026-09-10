@@ -21,6 +21,7 @@ namespace SockPhysics
 
         public bool IsDragging { get; private set; }
         public bool InputLocked { get; set; }
+        public Vector2 DragError => IsDragging ? target - body.position : Vector2.zero;
         public float MaxSpeed => maxSpeed;
         public event System.Action PoseReset;
 

@@ -20,6 +20,7 @@ namespace SockPhysics
         }
         private bool initialized;
         public bool Cleared { get; private set; }
+        public bool CompletionAllowed { get; set; } = true;
         public float HoldTime { get; private set; }
         public float FitScore { get; private set; }
         public bool ToeFits { get; private set; }
@@ -51,7 +52,7 @@ namespace SockPhysics
             AnkleFits = ankleError <= positionTolerance;
             LegFits = legError <= positionTolerance;
             FitScore = 25 * (Score(toeError) + Score(heelError) + Score(ankleError) + Score(legError));
-            bool valid = ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(desiredFootAngle, foot.rotation)) < 10 &&
+            bool valid = CompletionAllowed && ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(desiredFootAngle, foot.rotation)) < 10 &&
                 foot.velocity.magnitude < 0.2f && legBody.velocity.magnitude < 0.2f && Mathf.Abs(foot.angularVelocity) < 5;
             foreach (var row in new[] { sock.UpperPoints, sock.LowerPoints })
                 for (int i = 1; i < row.Length; i++)
