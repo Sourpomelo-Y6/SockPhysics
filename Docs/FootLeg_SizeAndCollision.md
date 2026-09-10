@@ -1,5 +1,7 @@
 # 足・脚の大きさと当たり判定の調整
 
+[ドキュメント一覧](README.md) / [プロジェクトREADME](../README.md)
+
 作成日: 2026-09-11
 
 対象はContactInsertion、ContactStraight、ContactBend。Playを停止して対象シーンを開き、変更後に保存する。Play中の変更は停止すると元に戻る。シーンごとの設定なので、別シーンへは自動反映されない。
@@ -14,7 +16,7 @@ Hierarchyの `Leg (drag here)` が明るい緑の脚、`Foot (Q E ankle)` が濃
 
 基本はSprite RendererとCapsule Collider 2DのSizeを同じ値にする。Colliderは有効、Is Triggerはオフ、DirectionはHorizontalのままにする。SceneビューでGizmosを有効にして対象を選択し、必要ならEdit Colliderで輪郭を確認する。見た目だけ大きくすると、布は小さいColliderまで入り込めるため、足・脚へめり込んで見える。
 
-保存済みのContactBendを2026-09-11に確認したところ、Sprite Rendererは脚1.80×0.48、足1.92×0.60へ変更済みだったが、Capsule Collider 2Dは脚1.50×0.40、足1.60×0.50のままだった。まずColliderのSizeも変更後の見た目に合わせる。この記録は保存済みファイルの確認結果であり、Play中や未保存のInspectorの状態は含まない。今回、シーンの設定は変更していない。
+2026-09-11のローカル調整時には、ContactBendのSprite Rendererが脚1.80×0.48、足1.92×0.60へ変更され、Capsule Collider 2Dが脚1.50×0.40、足1.60×0.50のままという不一致が見つかった。これは当時の手編集の事例であり、リポジトリの基準設定を示すものではない。同様の場合はColliderのSizeも変更後の見た目に合わせる。Play中や未保存の状態は保存済みファイルと異なる場合がある。
 
 ## 厚みを20％増やす例
 
@@ -25,14 +27,14 @@ Hierarchyの `Leg (drag here)` が明るい緑の脚、`Foot (Q E ankle)` が濃
 
 それぞれSprite RendererとCapsule Collider 2Dの両方へ同じ値を入れる。長さは変わらないので足首の接続位置は基準値のまま試せる。これは調整例であり、この変更後サイズでの攻略は未検証。
 
-## 全体を20％増やす例
+## 全体を20％増やす例と足首の接続
 
 | 対象 | Sprite RendererとCapsule Collider 2DのSize（X, Y） |
 | --- | --- |
 | 脚 | 1.80, 0.48 |
 | 足 | 1.92, 0.60 |
 
-足にある `Hinge Joint 2D` も合わせる。
+足にある `Hinge Joint 2D` も合わせる。Connected Rigidbodyには `Leg (drag here)` のRigidbody2Dを指定する。Anchorは足の中心から見た支点、Connected Anchorは脚の中心から見た支点で、この2点がワールド座標で一致するように配置する。
 
 | 項目 | 基準 | 20％拡大後 |
 | --- | --- | --- |
@@ -44,6 +46,8 @@ Auto Configure Connected Anchorはオフ。TransformのScaleは基準の1,1,1を
 開始時の足首角度が0度なら、足の中心を脚の中心より右へ1.68に配置する。基準の中心間隔は1.40なので、脚を動かさなければ足を右へ0.28動かす。ContactBendの基準開始位置なら脚(-4,-0.25)、足(-2.32,-0.25)となる。関節の両側の接続点が同じ場所になるようにし、開始時に関節が急に位置を補正することを避ける。
 
 任意の角度では、足の中心位置 = 脚の接続点のワールド座標 − 足のAnchorの回転・拡縮後のベクトル。足のTransformを移動し、両Anchorの表示が一致することを確認する。
+
+水平時の関係は「脚の中心 → 0.90 → 接続点 → 0.78 → 足の中心」。Play開始時に跳ねないこと、Q/Eで接続部を中心に足が回ることを確認する。Anchorは回転の支点であり、接続部で布を押しのける範囲は足・脚のCapsule Collider 2Dが決める。
 
 ## Sizeを合わせてもめり込む場合
 

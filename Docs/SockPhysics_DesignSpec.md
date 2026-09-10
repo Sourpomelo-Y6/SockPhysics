@@ -1,5 +1,9 @@
 # Sock Physics
 
+[ドキュメント一覧](README.md) / [プロジェクトREADME](../README.md)
+
+> この文書は当初の設計仕様です。未実装の構想を含みます。現在の実装状況は[実装計画](SockPhysics_ImplementationPlan.md)、操作方法は[Contact Sockガイド](ContactSock_Physics.md)を参照してください。
+
 ## 1. Project Overview
 
 **Project Name:** Sock Physics  

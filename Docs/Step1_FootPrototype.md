@@ -1,5 +1,9 @@
 # 段階1: 足の操作プロトタイプ
 
+[ドキュメント一覧](README.md) / [現在のContactシーン](ContactSock_Physics.md)
+
+> この文書は段階別の開発記録です。数値・操作・「次の段階」は当時の実装を対象にしています。現在の操作と調整はContactシーンのガイドを参照してください。
+
 実装日: 2026-09-08
 
 ## 起動と操作
@@ -42,8 +46,14 @@ Unityのバッチ実行でコンパイルと2D物理の自動検証を実施し�
 
 バッチ実行例（PowerShell）:
 
+パスは自分の環境に変更する。共通の準備は[検証ガイド](Verification.md)を参照。
+
 ```powershell
-& 'C:/Program Files/Unity 2021.3.45f2/Editor/Unity.exe' -batchmode -nographics -projectPath 'C:/Users/hi-wa/unity_workspase/SockPhysics' -executeMethod SockPhysics.Editor.FootPrototypeSetup.VerifyPhysics -logFile 'C:/Users/hi-wa/unity_workspase/SockPhysics/Logs/Step1Verification.log' -quit
+$unityEditor = 'C:/Program Files/Unity/Hub/Editor/2021.3.45f2/Editor/Unity.exe'
+$projectPath = 'C:/work/SockPhysicsValidation'
+$logPath = Join-Path $projectPath 'Logs/Step1Verification.log'
+New-Item -ItemType Directory -Force (Join-Path $projectPath 'Logs') | Out-Null
+& $unityEditor -batchmode -nographics -projectPath $projectPath -executeMethod SockPhysics.Editor.FootPrototypeSetup.VerifyPhysics -logFile $logPath -quit
 ```
 
 自動検証はマウスの画面座標変換、GUIボタンの実クリック、描画の目視確認を含まない。UnityのGameビューで操作感と表示を確認すること。物理パラメータを大きく変更した場合は再検証する。
