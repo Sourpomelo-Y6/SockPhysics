@@ -34,6 +34,8 @@
 
 ## 調整する場所
 
+足・脚の拡大、Colliderの調整、拡大後のめり込み対策は [FootLeg_SizeAndCollision.md](FootLeg_SizeAndCollision.md) を参照。
+
 新シーンの `Contact Sock` オブジェクトにある `ContactSock` コンポーネントで調整する。旧シーンのSockRecoveryと固定用SpringJoint2Dは、新しい布の列では使わない。
 
 | Inspector項目 | 基準値 | 役割 |
