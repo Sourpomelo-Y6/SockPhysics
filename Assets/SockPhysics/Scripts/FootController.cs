@@ -10,6 +10,7 @@ namespace SockPhysics
         [SerializeField, Min(0.1f)] private float damping = 14f;
         [SerializeField, Min(0.1f)] private float maxForce = 80f;
         [SerializeField, Min(0.1f)] private float maxSpeed = 6f;
+        [SerializeField] private bool holdAfterClear;
 
         private Rigidbody2D body;
         private Collider2D footCollider;
@@ -24,6 +25,12 @@ namespace SockPhysics
         public Vector2 DragError => IsDragging ? target - body.position : Vector2.zero;
         public float MaxSpeed => maxSpeed;
         public event System.Action PoseReset;
+        public void ConfigureContactMotion()
+        {
+            maxSpeed = 2f;
+            maxForce = 30f;
+            holdAfterClear = true;
+        }
 
         private void Awake() => Initialize();
 
@@ -82,7 +89,7 @@ namespace SockPhysics
             Initialize();
             if (deltaTime <= 0f) return;
             Vector2 force = -damping * body.velocity;
-            if (IsDragging) force += followStrength * (target - body.position);
+            if (IsDragging || (InputLocked && holdAfterClear)) force += followStrength * (target - body.position);
             force = Vector2.ClampMagnitude(force, maxForce);
             Vector2 nextVelocity = Vector2.ClampMagnitude(
                 body.velocity + force / body.mass * deltaTime, maxSpeed);

@@ -9,6 +9,7 @@ namespace SockPhysics
         [SerializeField] private FitEvaluator fit;
         [SerializeField] private Collider2D[] bendContacts;
         [SerializeField] private SpringJoint2D[] bendHolds;
+        [SerializeField] private ContactSock contactSock;
         [SerializeField, Min(1)] private float initialResistance = 100;
         [SerializeField, Min(1)] private float reductionPerPush = 25;
         [SerializeField, Min(0.02f)] private float pushDuration = 0.12f;
@@ -21,6 +22,7 @@ namespace SockPhysics
 
         public void Configure(FootController owner, AnkleController foot, FitEvaluator evaluator, Collider2D[] contacts, SpringJoint2D[] holds)
         { leg = owner; ankle = foot; fit = evaluator; bendContacts = contacts; bendHolds = holds; }
+        public void ConfigureContactSock(ContactSock cloth) => contactSock = cloth;
         private void Start() => Initialize();
         public void Initialize()
         {
@@ -65,6 +67,7 @@ namespace SockPhysics
             float freedom = 1 - BendResistance / Mathf.Max(1, initialResistance);
             ankle.SetBendFreedom(freedom);
             foreach (var hold in bendHolds) hold.frequency = Mathf.Lerp(16, 12, freedom);
+            if (contactSock != null) contactSock.SetResistance(1 - freedom);
             fit.CompletionAllowed = BendResistance <= 0;
         }
         private void OnDestroy() { if (initialized && leg != null) leg.PoseReset -= ResetResistance; }

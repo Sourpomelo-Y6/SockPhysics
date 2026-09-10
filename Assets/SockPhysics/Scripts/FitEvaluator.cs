@@ -14,11 +14,14 @@ namespace SockPhysics
         [SerializeField, Min(0.01f)] private float positionTolerance = 0.22f;
         [SerializeField, Min(0.01f)] private float holdDuration = 0.75f;
         [SerializeField] private float desiredFootAngle;
+        [SerializeField] private bool insertionPractice;
+        public void ConfigureInsertionPractice() => insertionPractice = true;
         public void ConfigureTargets(Vector2 toe, Vector2 heel, Vector2 anklePosition, Vector2 legPosition, float angle)
         {
             toeTarget = toe; heelTarget = heel; ankleTarget = anklePosition; legTarget = legPosition; desiredFootAngle = angle;
         }
         private bool initialized;
+        private ContactSock contactSock;
         public bool Cleared { get; private set; }
         public bool CompletionAllowed { get; set; } = true;
         public float HoldTime { get; private set; }
@@ -34,6 +37,7 @@ namespace SockPhysics
         {
             if (initialized) return;
             leg.PoseReset += ResetProgress;
+            contactSock = sock.GetComponent<ContactSock>();
             initialized = true;
         }
         private void FixedUpdate() => Evaluate(Time.fixedDeltaTime);
@@ -52,8 +56,9 @@ namespace SockPhysics
             AnkleFits = ankleError <= positionTolerance;
             LegFits = legError <= positionTolerance;
             FitScore = 25 * (Score(toeError) + Score(heelError) + Score(ankleError) + Score(legError));
-            bool valid = CompletionAllowed && ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(desiredFootAngle, foot.rotation)) < 10 &&
+            bool valid = !insertionPractice && CompletionAllowed && ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(desiredFootAngle, foot.rotation)) < 10 &&
                 foot.velocity.magnitude < 0.2f && legBody.velocity.magnitude < 0.2f && Mathf.Abs(foot.angularVelocity) < 5;
+            if (contactSock != null) valid &= contactSock.ContainsFoot(foot);
             foreach (var row in new[] { sock.UpperPoints, sock.LowerPoints })
                 for (int i = 1; i < row.Length; i++)
                     valid &= Vector2.Distance(row[i].Body.position, row[i - 1].Body.position) <
@@ -78,6 +83,15 @@ namespace SockPhysics
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 190, 410, 190), GUI.skin.box);
+            if (insertionPractice)
+            {
+                GUILayout.Label("INSERTION PRACTICE / No clear lock");
+                GUILayout.Label("Insert the foot, then pull completely out.");
+                GUILayout.Label("Watch the cloth close again without resetting.");
+                if (GUILayout.Button("Restart [R]")) leg.ResetPose();
+                GUILayout.EndArea();
+                return;
+            }
             GUILayout.Label(Cleared ? "CLEAR! Sock fitted." : "Align toe, heel, ankle and leg, then hold still.");
             GUILayout.Label("Fit: " + FitScore.ToString("F0") + "%");
             GUILayout.Label("Toe: " + ToeFits + "   Heel: " + HeelFits);

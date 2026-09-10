@@ -19,6 +19,11 @@ namespace SockPhysics
         [SerializeField] private bool fitStage;
         [SerializeField] private bool bendStage;
         [SerializeField] private bool resistanceStage;
+        [SerializeField] private bool contactStage;
+        public void ConfigureContact(bool bent)
+        {
+            ConfigureBend(); contactStage = true; bendStage = bent; fitStage = true;
+        }
         public void ShowResistanceInstructions() => resistanceStage = true;
         public void SetBendFreedom(float freedom)
         {
@@ -84,9 +89,9 @@ namespace SockPhysics
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 16, 410, 170), GUI.skin.box);
-            GUILayout.Label(resistanceStage ? "STEP 8 / Push and pull back" : bendStage ? "STEP 7 / Turn the corner" : fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
+            GUILayout.Label(contactStage ? "CONTACT SOCK / " + (bendStage ? "Bend" : "Straight") : resistanceStage ? "STEP 8 / Push and pull back" : bendStage ? "STEP 7 / Turn the corner" : fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
             GUILayout.Label("Drag the light green LEG. Q / E: bend ankle.");
-            GUILayout.Label(resistanceStage ? "Push at bend, pull left, repeat. Then use Q to bend." : bendStage ? "At the bend, pull back and use Q toward -90 degrees." : "Push, pull back, straighten with E, then push again.");
+            GUILayout.Label(resistanceStage ? "Push at bend, pull left, repeat. Then use Q to bend." : contactStage ? "Push into the closed entrance. Pull out to let it close." : bendStage ? "At the bend, pull back and use Q toward -90 degrees." : "Push, pull back, straighten with E, then push again.");
             GUILayout.Label("Target ankle: " + targetAngle.ToString("F0") + " degrees");
             if (GUILayout.Button("Reset leg, foot and sock [R]")) leg.ResetPose();
             GUILayout.EndArea();
