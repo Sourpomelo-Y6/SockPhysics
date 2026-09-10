@@ -13,6 +13,11 @@ namespace SockPhysics
         [SerializeField] private Vector2 legTarget = new Vector2(2, 0);
         [SerializeField, Min(0.01f)] private float positionTolerance = 0.22f;
         [SerializeField, Min(0.01f)] private float holdDuration = 0.75f;
+        [SerializeField] private float desiredFootAngle;
+        public void ConfigureTargets(Vector2 toe, Vector2 heel, Vector2 anklePosition, Vector2 legPosition, float angle)
+        {
+            toeTarget = toe; heelTarget = heel; ankleTarget = anklePosition; legTarget = legPosition; desiredFootAngle = angle;
+        }
         private bool initialized;
         public bool Cleared { get; private set; }
         public float HoldTime { get; private set; }
@@ -46,7 +51,7 @@ namespace SockPhysics
             AnkleFits = ankleError <= positionTolerance;
             LegFits = legError <= positionTolerance;
             FitScore = 25 * (Score(toeError) + Score(heelError) + Score(ankleError) + Score(legError));
-            bool valid = ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(0, foot.rotation)) < 10 &&
+            bool valid = ToeFits && HeelFits && AnkleFits && LegFits && Mathf.Abs(Mathf.DeltaAngle(desiredFootAngle, foot.rotation)) < 10 &&
                 foot.velocity.magnitude < 0.2f && legBody.velocity.magnitude < 0.2f && Mathf.Abs(foot.angularVelocity) < 5;
             foreach (var row in new[] { sock.UpperPoints, sock.LowerPoints })
                 for (int i = 1; i < row.Length; i++)

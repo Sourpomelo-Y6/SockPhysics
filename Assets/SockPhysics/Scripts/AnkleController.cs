@@ -6,7 +6,7 @@ namespace SockPhysics
     public sealed class AnkleController : MonoBehaviour
     {
         [SerializeField] private FootController leg;
-        [SerializeField, Range(-70, 30)] private float targetAngle = -50;
+        [SerializeField] private float targetAngle = -50;
         [SerializeField, Min(1)] private float turnSpeed = 60;
         [SerializeField, Min(1)] private float motorTorque = 30;
         private Rigidbody2D body;
@@ -17,6 +17,16 @@ namespace SockPhysics
         public float TargetAngle => targetAngle;
         public bool InputLocked { get; set; }
         [SerializeField] private bool fitStage;
+        [SerializeField] private bool bendStage;
+        [SerializeField] private float minimumAngle = -70;
+        [SerializeField] private float maximumAngle = 30;
+        [SerializeField] private float resetAngle = -50;
+        public void ConfigureBend()
+        {
+            bendStage = true; minimumAngle = -100; maximumAngle = 20;
+            resetAngle = targetAngle = 0;
+            motorTorque = 120;
+        }
         public void ShowFitInstructions() => fitStage = true;
 
         public void Configure(FootController controller) => leg = controller;
@@ -37,7 +47,7 @@ namespace SockPhysics
             float input = (Input.GetKey(KeyCode.E) ? 1 : 0) - (Input.GetKey(KeyCode.Q) ? 1 : 0);
             SetTargetAngle(targetAngle + input * turnSpeed * Time.deltaTime);
         }
-        public void SetTargetAngle(float angle) => targetAngle = Mathf.Clamp(angle, -70, 30);
+        public void SetTargetAngle(float angle) => targetAngle = Mathf.Clamp(angle, minimumAngle, maximumAngle);
         private void FixedUpdate() => StepPhysics();
         public void StepPhysics()
         {
@@ -53,7 +63,7 @@ namespace SockPhysics
             body.rotation = startRotation;
             body.velocity = Vector2.zero;
             body.angularVelocity = 0;
-            targetAngle = -50;
+            targetAngle = resetAngle;
             hinge.motor = new JointMotor2D { motorSpeed = 0, maxMotorTorque = motorTorque };
             Physics2D.SyncTransforms();
         }
@@ -64,9 +74,9 @@ namespace SockPhysics
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 16, 410, 170), GUI.skin.box);
-            GUILayout.Label(fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
+            GUILayout.Label(bendStage ? "STEP 7 / Turn the corner" : fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
             GUILayout.Label("Drag the light green LEG. Q / E: bend ankle.");
-            GUILayout.Label("Push, pull back, straighten with E, then push again.");
+            GUILayout.Label(bendStage ? "At the bend, pull back and use Q toward -90 degrees." : "Push, pull back, straighten with E, then push again.");
             GUILayout.Label("Target ankle: " + targetAngle.ToString("F0") + " degrees");
             if (GUILayout.Button("Reset leg, foot and sock [R]")) leg.ResetPose();
             GUILayout.EndArea();
