@@ -15,6 +15,9 @@ namespace SockPhysics
         private float startRotation;
         private bool initialized;
         public float TargetAngle => targetAngle;
+        public bool InputLocked { get; set; }
+        [SerializeField] private bool fitStage;
+        public void ShowFitInstructions() => fitStage = true;
 
         public void Configure(FootController controller) => leg = controller;
         private void Start() => Initialize();
@@ -30,6 +33,7 @@ namespace SockPhysics
         }
         private void Update()
         {
+            if (InputLocked) return;
             float input = (Input.GetKey(KeyCode.E) ? 1 : 0) - (Input.GetKey(KeyCode.Q) ? 1 : 0);
             SetTargetAngle(targetAngle + input * turnSpeed * Time.deltaTime);
         }
@@ -60,7 +64,7 @@ namespace SockPhysics
         private void OnGUI()
         {
             GUILayout.BeginArea(new Rect(16, 16, 410, 170), GUI.skin.box);
-            GUILayout.Label("STEP 5 / Ankle and narrow section");
+            GUILayout.Label(fitStage ? "STEP 6 / Fit the sock" : "STEP 5 / Ankle and narrow section");
             GUILayout.Label("Drag the light green LEG. Q / E: bend ankle.");
             GUILayout.Label("Push, pull back, straighten with E, then push again.");
             GUILayout.Label("Target ankle: " + targetAngle.ToString("F0") + " degrees");

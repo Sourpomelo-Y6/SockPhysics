@@ -20,6 +20,7 @@ namespace SockPhysics
         private bool initialized;
 
         public bool IsDragging { get; private set; }
+        public bool InputLocked { get; set; }
         public float MaxSpeed => maxSpeed;
         public event System.Action PoseReset;
 
@@ -44,6 +45,7 @@ namespace SockPhysics
                 return;
             }
 
+            if (InputLocked) { EndDrag(); return; }
             if (inputCamera == null) return;
             Vector3 screen = Input.mousePosition;
             screen.z = transform.position.z - inputCamera.transform.position.z;
@@ -56,6 +58,7 @@ namespace SockPhysics
         public bool BeginDrag(Vector2 pointer)
         {
             Initialize();
+            if (InputLocked) return false;
             if (!footCollider.OverlapPoint(pointer)) return false;
             grabOffset = body.position - pointer;
             target = body.position;

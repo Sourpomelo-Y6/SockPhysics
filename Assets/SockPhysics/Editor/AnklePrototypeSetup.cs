@@ -156,7 +156,7 @@ namespace SockPhysics.Editor
             }
             Debug.Log("STEP5_PHYSICS_VERIFICATION_PASSED");
         }
-        private static void Simulate(FootController leg, AnkleController ankle, SockController sock, int count)
+        internal static void Simulate(FootController leg, AnkleController ankle, SockController sock, int count)
         {
             var parts = new[] { leg.GetComponent<Collider2D>(), ankle.GetComponent<Collider2D>() };
             var points = sock.GetComponentsInChildren<SockPhysicsPoint>();
@@ -174,7 +174,8 @@ namespace SockPhysics.Editor
                 }
                 foreach (var row in new[] { sock.UpperPoints, sock.LowerPoints })
                     for (int j = 1; j < row.Length; j++)
-                        Require(Vector2.Distance(row[j].Body.position, row[j - 1].Body.position) < 0.38f, "Cloth retains collider coverage");
+                        Require(Vector2.Distance(row[j].Body.position, row[j - 1].Body.position) < 0.38f,
+                            "Cloth retains collider coverage: " + row[j].name + " distance=" + Vector2.Distance(row[j].Body.position, row[j - 1].Body.position));
                 var hinge = ankle.GetComponent<HingeJoint2D>();
                 Require(Vector2.Distance(hinge.transform.TransformPoint(hinge.anchor), hinge.connectedBody.transform.TransformPoint(hinge.connectedAnchor)) < 0.08f,
                     "Ankle joint stays connected");
